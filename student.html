@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>First/Second Conditionals Practice — Student</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f6f4ef;color:#222}
+.app{max-width:1100px;margin:0 auto;padding:34px 42px 48px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+h1{font-size:30px;margin:0} .counter{font-size:16px;font-weight:700}
+.card{background:#fff;border-radius:24px;padding:38px 44px;box-shadow:0 8px 28px rgba(0,0,0,.07);min-height:520px;display:flex;flex-direction:column}
+.kind{font-size:16px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:28px}
+.question{font-size:clamp(19px,4.8vw,28px);line-height:2.15;font-weight:400;flex:1}
+.blankwrap{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap;vertical-align:middle;margin:2px 3px}
+.blank{display:inline-flex;min-width:86px;height:38px;align-items:center;justify-content:center;padding:0 7px;font-weight:800;white-space:nowrap}
+.blank.empty::after{content:"_____"}
+.choices{display:inline-flex;gap:5px;flex-wrap:wrap;vertical-align:middle}
+.choice{-webkit-appearance:none;appearance:none;border:1px solid #a9aaa6;background:#fff;color:#252525;border-radius:999px;min-height:38px;padding:7px 10px;font-size:16px;font-weight:650;touch-action:manipulation}
+.blank.correct{background:#e5f4e9;color:#215d39;border-radius:7px;border-bottom-color:#4c8b63}
+.choice.selected{background:#e7efe9;border:2px solid #355747;padding:6px 9px}
+.choice.wrong{background:#f7e6e2;border-color:#b86b61}
+.choice:disabled{opacity:1}
+
+.source{font-size:19px;font-weight:650;text-align:right;margin-top:24px}
+.controls{margin-top:42px;padding-top:22px;border-top:1px solid #e7e3db;display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.ctrl{font-size:14px;font-weight:750;padding:8px 13px;border-radius:9px;border:1px solid #aaa;background:#fff;cursor:pointer}
+.ctrl.primary{background:#222;color:#fff;border-color:#222} .ctrl:disabled{opacity:.35;cursor:default}
+.note{display:none;margin-top:18px;padding:14px 16px;border-radius:12px;background:#f1efe9;font-size:16px;line-height:1.5}
+.note.show{display:none} .version{position:fixed;right:12px;bottom:8px;font-size:11px;opacity:.35}
+.cue{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35);color:#fff;font-size:150px;font-weight:900;z-index:10;pointer-events:none}
+.cue.show{display:flex}
+@media(max-width:700px){.app{padding:22px 15px}.card{padding:26px 20px}.question{font-size:23px}.source{font-size:17px}}
+
+.summary{display:none;flex:1;align-items:center;justify-content:center;text-align:center;padding:20px}
+.summary.show{display:flex}
+.summaryBox{width:min(620px,100%)}
+.summaryTitle{font-size:32px;font-weight:800;margin-bottom:26px}
+.scoreBig{font-size:64px;font-weight:850;line-height:1;margin-bottom:12px}
+.scoreSub{font-size:20px;margin-bottom:28px}
+.scoreGrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0 auto 28px;max-width:430px}
+.scoreCell{background:#f3f1eb;border-radius:16px;padding:20px}
+.scoreNum{font-size:36px;font-weight:850}
+.scoreLabel{font-size:15px;margin-top:4px}
+
+/* Student mobile dropdown version */
+.question{font-size:clamp(20px,5.7vw,27px);line-height:2.05;font-weight:400}
+.blankwrap{display:inline;vertical-align:baseline;margin:0 3px}
+.studentSelect{
+  -webkit-appearance:auto; appearance:auto;
+  display:inline-block; width:auto; max-width:150px;
+  min-height:44px; margin:3px 2px; padding:6px 28px 6px 10px;
+  border:1.5px solid #8f918d; border-radius:9px;
+  background:#fff; color:#252525;
+  font:inherit; font-size:18px; font-weight:800;
+  vertical-align:middle; touch-action:manipulation;
+}
+.studentSelect:focus{outline:3px solid rgba(53,87,71,.22);outline-offset:1px}
+@media(max-width:600px){
+  .app{padding:18px 12px 34px}
+  .card{padding:24px 18px;min-height:0}
+  .top{margin-bottom:18px}
+  h1{font-size:23px}
+  .kind{margin-bottom:20px}
+  .question{font-size:21px;line-height:2.15}
+  .studentSelect{font-size:17px;min-height:46px;max-width:142px}
+  .source{font-size:16px;line-height:1.4;margin-top:22px}
+  .controls{margin-top:30px}
+  .ctrl{min-height:44px;padding:10px 15px}
+}
+</style></head><body>
+<div class="app"><div class="top"><h1>First/Second Conditionals Practice</h1><div class="counter" id="counter"></div></div>
+<div class="card"><div class="kind" id="kind"></div><div class="question" id="question"></div><div class="source" id="source"></div><div class="summary" id="summary"></div>
+<div class="controls" id="controls"></div><div class="note" id="note"></div></div></div>
+<div class="cue" id="cue"></div><div class="version">student v2</div>
+<script>
+const QUESTIONS=[{"title":"Speech Challenge 1","source":"Admiral William H. McRaven — MIT Commencement Speech, 2020","segments":[["text","“If you "],["blank","hope",["hope","hoped"]],["text"," to save the world, you "],["blank","will",["will","would","could"]],["text"," have to stand by your convictions.”"]],"grammar":"First conditional: the speaker treats the condition as a real future possibility. The if-clause uses the present simple (hope), and the result uses will + base verb."},{"title":"Speech Challenge 2","source":"Sandra Bullock — Commencement Speech, 2014","segments":[["text","“If you "],["blank","could",["can","could"]],["text"," go back and talk to your younger self, what "],["blank","would",["will","would"]],["text"," you "],["blank","say",["say","said"]],["text","?”"]],"grammar":"Second conditional question: could introduces a hypothetical possibility, and the question uses would + subject + base verb: “What would you say?”"},{"title":"Song Challenge 1","source":"Jordan Lane — “If You Don't Mind”","audio":"jordan","segments":[["text","And I "],["blank","will",["will","would"]],["text"," love you if you "],["blank","let",["let","would let"]],["text"," me."],["br"],["text","And I "],["blank","’ll",["’ll","’d"]],["text"," go if you "],["blank","don't",["don't","didn’t"]],["text"," want me."]],"grammar":"First conditional: the result clause comes before the if-clause. The if-clause still uses the present simple (let / don’t want), not would."},{"title":"Song Challenge 2","source":"Beyoncé — “If I ____ a Boy”","audio":"beyonce","segments":[["text","If I "],["blank","were",["am","was","were"]],["text"," a boy"],["br"],["text","I think I "],["blank","could",["can","could"]],["text"," understand"],["br"],["text","How it feels to love a girl"],["br"],["text","I swear I "],["blank","’d",["’ll","’d"]],["text"," be a better man"]],"grammar":"Second conditional: were marks the hypothetical condition. Could and ’d (= would) describe hypothetical results."},{"title":"Song Challenge 3","source":"Lady Gaga & Bruno Mars — “Die With a Smile”","audio":"bruno","segments":[["text","If the world "],["blank","was",["is","was","were"]],["text"," ending"],["br"],["text","I "],["blank","’d",["’ll","’d"]],["text"," wanna be next to you"],["br"],["text","If the party "],["blank","was",["is","was","were"]],["text"," over"],["br"],["text","And our time on Earth "],["blank","was",["is","was","were"]],["text"," through"],["br"],["text","I "],["blank","’d",["’ll","’d"]],["text"," wanna hold you just for a while"],["br"],["text","And die with a smile"]],"grammar":"Second conditional: the song uses was in hypothetical clauses with singular subjects, which is common in informal English. ’d here means would."}];
+const AUDIO={};
+let idx=0, selected=[], revealed=false, player=null, timers=[], studentAnswers=Array(QUESTIONS.length).fill(null), summaryMode=false;
+const $=id=>document.getElementById(id);
+function stopAudio(){timers.forEach(clearTimeout);timers=[];$("cue").classList.remove("show");if(player){player.pause();player.currentTime=0;}}
+function render(){
+ stopAudio(); summaryMode=false; revealed=false;
+ $("summary").className="summary"; $("summary").innerHTML="";
+ $("kind").style.display="block"; $("question").style.display="block"; $("source").style.display="block";
+ const q=QUESTIONS[idx]; selected=Array(q.segments.filter(s=>s[0]==="blank").length).fill(null);
+ $("counter").textContent=`${idx+1} / ${QUESTIONS.length}`; $("kind").textContent=q.title; $("source").textContent="— "+q.source; $("note").className="note"; $("note").textContent=q.grammar;
+ let bi=0; $("question").innerHTML="";
+ q.segments.forEach(seg=>{
+   if(seg[0]==="text") $("question").append(document.createTextNode(seg[1]));
+   else if(seg[0]==="br") $("question").append(document.createElement("br"));
+   else {
+     const n=bi++, wrap=document.createElement("span");wrap.className="blankwrap";
+     const select=document.createElement("select");select.className="studentSelect";select.dataset.n=n;
+     select.setAttribute("aria-label","Choose an answer");
+     const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent="_____";placeholder.disabled=true;placeholder.selected=true;select.append(placeholder);
+     seg[2].forEach(opt=>{const o=document.createElement("option");o.value=opt;o.textContent=opt;select.append(o)});
+     select.onchange=()=>{selected[n]=select.value;saveStudentChoices()};
+     wrap.append(select);$("question").append(wrap);
+   }
+ });
+ let c=`<button class="ctrl" id="prev" ${idx===0?"disabled":""}>← Previous</button><button class="ctrl" id="next">${idx===QUESTIONS.length-1?"Finish":"Next →"}</button>`;
+ $("controls").innerHTML=c;
+ $("prev").onclick=()=>{if(idx>0){saveStudentChoices();idx--;render()}};
+ $("next").onclick=()=>{saveStudentChoices();if(idx<QUESTIONS.length-1){idx++;render()}else{showStudentDone()}};
+ restoreStudentChoices();
+}
+function choose(n,opt,correct,wrap){
+ if(revealed)return; selected[n]=opt; const blank=wrap.querySelector(".blank");blank.textContent=opt;blank.classList.remove("empty");
+ wrap.querySelectorAll(".choice").forEach(b=>b.classList.toggle("selected",b.textContent===opt));
+}
+function saveStudentChoices(){
+ studentAnswers[idx]=selected.slice();
+}
+function restoreStudentChoices(){
+ const saved=studentAnswers[idx];
+ if(!saved)return;
+ const selects=[...document.querySelectorAll(".studentSelect")];
+ saved.forEach((opt,n)=>{
+   if(opt==null || !selects[n])return;
+   selected[n]=opt;
+   selects[n].value=opt;
+ });
+}
+function showStudentDone(){
+ stopAudio(); summaryMode=true;
+ $("counter").textContent="Done";
+ $("kind").style.display="none"; $("question").style.display="none"; $("source").style.display="none";
+ $("summary").className="summary show";
+ $("summary").innerHTML=`<div class="summaryBox"><div class="summaryTitle">All done! 🎉</div><div class="scoreSub">Your answers are ready.</div></div>`;
+ $("note").className="note";
+ $("controls").innerHTML=`<button class="ctrl" id="backStudent">← Back to Question 5</button><button class="ctrl" id="restartStudent">↻ Start Over</button>`;
+ $("backStudent").onclick=()=>{idx=QUESTIONS.length-1;render()};
+ $("restartStudent").onclick=()=>{studentAnswers=Array(QUESTIONS.length).fill(null);idx=0;render()};
+}
+function reveal(){
+ revealed=true; const q=QUESTIONS[idx]; let n=0;
+ const blanks=q.segments.filter(s=>s[0]==="blank");
+ results[idx]=blanks.map((seg,i)=>selected[i]===seg[1]);
+ document.querySelectorAll(".blankwrap").forEach(wrap=>{const seg=q.segments.filter(s=>s[0]==="blank")[n];const correct=seg[1];const blank=wrap.querySelector(".blank");blank.textContent=correct;blank.classList.remove("empty");blank.classList.add("correct");
+ wrap.querySelectorAll(".choice").forEach(b=>{
+   b.classList.remove("selected");
+   if(selected[n]!==null && b.textContent===selected[n]){
+     if(selected[n]===correct) b.classList.add("selected");
+     else b.classList.add("wrong");
+   }
+   b.disabled=true;
+ });n++;});
+ $("note").classList.add("show");
+}
+function showSummary(){
+ stopAudio(); summaryMode=true;
+ let correct=0,total=0;
+ results.forEach((r,qi)=>{
+   const q=QUESTIONS[qi];
+   const count=q.segments.filter(s=>s[0]==="blank").length;
+   total+=count;
+   if(r) correct+=r.filter(Boolean).length;
+ });
+ const wrong=total-correct;
+ $("counter").textContent="Results";
+ $("kind").style.display="none"; $("question").style.display="none"; $("source").style.display="none";
+ $("summary").className="summary show";
+ $("summary").innerHTML=`<div class="summaryBox">
+   <div class="summaryTitle">Your Results 🎉</div>
+   <div class="scoreBig">${correct} / ${total}</div>
+   <div class="scoreSub">answers correct</div>
+   <div class="scoreGrid">
+     <div class="scoreCell"><div class="scoreNum">✓ ${correct}</div><div class="scoreLabel">Correct</div></div>
+     <div class="scoreCell"><div class="scoreNum">✕ ${wrong}</div><div class="scoreLabel">Incorrect</div></div>
+   </div>
+ </div>`;
+ $("note").className="note";
+ $("controls").innerHTML=`<button class="ctrl" id="backFromResults">← Back to Question 5</button><button class="ctrl" id="restart">↻ Start Over</button>`;
+ $("backFromResults").onclick=()=>{idx=QUESTIONS.length-1;render()};
+ $("restart").onclick=()=>{results=Array(QUESTIONS.length).fill(null);idx=0;render()};
+}
+function play(){
+ stopAudio();const q=QUESTIONS[idx];player=new Audio(AUDIO[q.audio]);player.play();
+ // User-cut clips leave about three seconds before the target lyric.
+ [3,2,1].forEach((x,k)=>timers.push(setTimeout(()=>{$("cue").textContent=x;$("cue").classList.add("show")},k*1000)));
+ timers.push(setTimeout(()=>$("cue").classList.remove("show"),3000));
+}
+render();
+</script></body></html>
