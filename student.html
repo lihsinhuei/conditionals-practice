@@ -70,7 +70,7 @@ h1{font-size:30px;margin:0} .counter{font-size:16px;font-weight:700}
 <div class="app"><div class="top"><h1>First/Second Conditionals Practice</h1><div class="counter" id="counter"></div></div>
 <div class="card"><div class="kind" id="kind"></div><div class="question" id="question"></div><div class="source" id="source"></div><div class="summary" id="summary"></div>
 <div class="controls" id="controls"></div><div class="note" id="note"></div></div></div>
-<div class="cue" id="cue"></div><div class="version">student v2</div>
+<div class="cue" id="cue"></div><div class="version">student v3</div>
 <script>
 const QUESTIONS=[{"title":"Speech Challenge 1","source":"Admiral William H. McRaven — MIT Commencement Speech, 2020","segments":[["text","“If you "],["blank","hope",["hope","hoped"]],["text"," to save the world, you "],["blank","will",["will","would","could"]],["text"," have to stand by your convictions.”"]],"grammar":"First conditional: the speaker treats the condition as a real future possibility. The if-clause uses the present simple (hope), and the result uses will + base verb."},{"title":"Speech Challenge 2","source":"Sandra Bullock — Commencement Speech, 2014","segments":[["text","“If you "],["blank","could",["can","could"]],["text"," go back and talk to your younger self, what "],["blank","would",["will","would"]],["text"," you "],["blank","say",["say","said"]],["text","?”"]],"grammar":"Second conditional question: could introduces a hypothetical possibility, and the question uses would + subject + base verb: “What would you say?”"},{"title":"Song Challenge 1","source":"Jordan Lane — “If You Don't Mind”","audio":"jordan","segments":[["text","And I "],["blank","will",["will","would"]],["text"," love you if you "],["blank","let",["let","would let"]],["text"," me."],["br"],["text","And I "],["blank","’ll",["’ll","’d"]],["text"," go if you "],["blank","don't",["don't","didn’t"]],["text"," want me."]],"grammar":"First conditional: the result clause comes before the if-clause. The if-clause still uses the present simple (let / don’t want), not would."},{"title":"Song Challenge 2","source":"Beyoncé — “If I ____ a Boy”","audio":"beyonce","segments":[["text","If I "],["blank","were",["am","was","were"]],["text"," a boy"],["br"],["text","I think I "],["blank","could",["can","could"]],["text"," understand"],["br"],["text","How it feels to love a girl"],["br"],["text","I swear I "],["blank","’d",["’ll","’d"]],["text"," be a better man"]],"grammar":"Second conditional: were marks the hypothetical condition. Could and ’d (= would) describe hypothetical results."},{"title":"Song Challenge 3","source":"Lady Gaga & Bruno Mars — “Die With a Smile”","audio":"bruno","segments":[["text","If the world "],["blank","was",["is","was","were"]],["text"," ending"],["br"],["text","I "],["blank","’d",["’ll","’d"]],["text"," wanna be next to you"],["br"],["text","If the party "],["blank","was",["is","was","were"]],["text"," over"],["br"],["text","And our time on Earth "],["blank","was",["is","was","were"]],["text"," through"],["br"],["text","I "],["blank","’d",["’ll","’d"]],["text"," wanna hold you just for a while"],["br"],["text","And die with a smile"]],"grammar":"Second conditional: the song uses was in hypothetical clauses with singular subjects, which is common in informal English. ’d here means would."}];
 const AUDIO={};
@@ -122,10 +122,26 @@ function restoreStudentChoices(){
 }
 function showStudentDone(){
  stopAudio(); summaryMode=true;
- $("counter").textContent="Done";
+ let correct=0,total=0;
+ QUESTIONS.forEach((q,qi)=>{
+   const blanks=q.segments.filter(s=>s[0]==="blank");
+   total+=blanks.length;
+   const answers=studentAnswers[qi] || [];
+   blanks.forEach((seg,i)=>{ if(answers[i]===seg[1]) correct++; });
+ });
+ const wrong=total-correct;
+ $("counter").textContent="Results";
  $("kind").style.display="none"; $("question").style.display="none"; $("source").style.display="none";
  $("summary").className="summary show";
- $("summary").innerHTML=`<div class="summaryBox"><div class="summaryTitle">All done! 🎉</div><div class="scoreSub">Your answers are ready.</div></div>`;
+ $("summary").innerHTML=`<div class="summaryBox">
+   <div class="summaryTitle">Your Results 🎉</div>
+   <div class="scoreBig">${correct} / ${total}</div>
+   <div class="scoreSub">answers correct</div>
+   <div class="scoreGrid">
+     <div class="scoreCell"><div class="scoreNum">✓ ${correct}</div><div class="scoreLabel">Correct</div></div>
+     <div class="scoreCell"><div class="scoreNum">✕ ${wrong}</div><div class="scoreLabel">Incorrect</div></div>
+   </div>
+ </div>`;
  $("note").className="note";
  $("controls").innerHTML=`<button class="ctrl" id="backStudent">← Back to Question 5</button><button class="ctrl" id="restartStudent">↻ Start Over</button>`;
  $("backStudent").onclick=()=>{idx=QUESTIONS.length-1;render()};
